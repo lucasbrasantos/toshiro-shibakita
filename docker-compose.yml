@@ -1,0 +1,43 @@
+services:
+    nginx:
+        build: .
+        ports:
+            - "80:80"
+        volumes:
+            - .:/usr/share/nginx/html
+        networks:
+            - app-network
+        depends_on:
+            - php
+            - db
+
+    php:
+        image: php:8-fpm
+        build:
+            context: .
+            dockerfile: Dockerfile-php
+        volumes:
+            - .:/usr/share/nginx/html
+        networks:
+            - app-network
+        depends_on:
+            - db
+
+    db:
+        image: mysql:5.7
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: mydb
+        ports:
+            - 3306:3306
+        volumes:
+            - dbdata:/var/lib/mysql
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes:
+    dbdata:

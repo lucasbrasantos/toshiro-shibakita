@@ -1,48 +1,102 @@
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
 
 <head>
-<title>Exemplo PHP</title>
+    <meta charset="ISO-8859-1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo PHP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #444;
+            margin-bottom: 20px;
+        }
+        .php-info {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .table-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        table {
+            width: 80%;
+            max-width: 600px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #6c7ae0;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
+
 <body>
 
-<?php
-ini_set("display_errors", 1);
-header('Content-Type: text/html; charset=iso-8859-1');
+    <h1>Informações do PHP e Carros</h1>
 
+    <div class="php-info">
+        <?php
+        ini_set("display_errors", 1);
+        echo 'Versão Atual do PHP: ' . phpversion();
+        ?>
+    </div>
 
+    <?php
+    $servername = "db";
+    $username = "root";
+    $password = "root";
+    $database = "mydb";
 
-echo 'Versao Atual do PHP: ' . phpversion() . '<br>';
+    // Criar conexão
+    $link = new mysqli($servername, $username, $password, $database);
 
-$servername = "54.234.153.24";
-$username = "root";
-$password = "Senha123";
-$database = "meubanco";
+    // Verificar conexão
+    if (mysqli_connect_errno()) {
+        printf("Falha na conexão: %s\n", mysqli_connect_error());
+        exit();
+    }
 
-// Criar conexão
+    // Query para obter dados
+    $query = "SELECT * FROM carro";
 
+    echo '<div class="table-container"><table>';
+    echo '<tr><th>ID</th><th>Nome</th><th>Cor</th></tr>';
 
-$link = new mysqli($servername, $username, $password, $database);
+    if ($result = mysqli_query($link, $query)) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo '<tr>';
+            echo '<td>' . $row["id"] . '</td>';
+            echo '<td>' . $row["nome"] . '</td>';
+            echo '<td>' . $row["cor"] . '</td>';
+            echo '</tr>';
+        }
+        mysqli_free_result($result);
+    }
 
-/* check connection */
-if (mysqli_connect_errno()) {
-    printf("Connect failed: %s\n", mysqli_connect_error());
-    exit();
-}
+    echo '</table></div>';
 
-$valor_rand1 =  rand(1, 999);
-$valor_rand2 = strtoupper(substr(bin2hex(random_bytes(4)), 1));
-$host_name = gethostname();
+    mysqli_close($link);
+    ?>
 
-
-$query = "INSERT INTO dados (AlunoID, Nome, Sobrenome, Endereco, Cidade, Host) VALUES ('$valor_rand1' , '$valor_rand2', '$valor_rand2', '$valor_rand2', '$valor_rand2','$host_name')";
-
-
-if ($link->query($query) === TRUE) {
-  echo "New record created successfully";
-} else {
-  echo "Error: " . $link->error;
-}
-
-?>
 </body>
+
 </html>
